@@ -1,6 +1,12 @@
 # ICC Plus 2 - GitHub Template
 A template to easily host Interactive CYOAs on GitHub.
 
+> [!WARNING]  
+> May break very easily, considering to download the latest Viewer it just
+> downloads the latest zip that doesn't have 'local' in the name. Therefore,
+> if wahaha303 stops uploading viewers there or uses a different format, it
+> could break upon update, so you will have to host it manually.
+
 Features:
 
 * Automatically fetches the latest viewed from the ICCPlus2's GitHub page

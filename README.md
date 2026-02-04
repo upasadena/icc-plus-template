@@ -23,6 +23,11 @@ View the text instructions [below](#instructions) or
    access your CYOA
 4. Press **Create repository**
 
+> [!IMPORTANT]
+> Don't worry if it errors here, it's doing so because you haven't enabled
+> Pages, but we'll do that in the step below. After you do that and upload
+> your `project.json` if it still errors THEN, *then* you should be worried.
+
 ### Enable GitHub Pages
 
 1. Go into **Settings** → **Pages** and where it says **Build and deployment**

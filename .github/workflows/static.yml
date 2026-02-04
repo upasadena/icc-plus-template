@@ -1,0 +1,79 @@
+name: Deploy static content to Pages
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download latest ICCPlus Viewer (non-local zip) and extract
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          owner="wahaha303"
+          repo="ICCPlus"
+          api="https://api.github.com/repos/${owner}/${repo}/releases/latest"
+
+          echo "Querying: $api"
+
+          # Find the *user-uploaded* zip asset whose name ends with .zip and does NOT contain 'local'
+          url="$(
+            curl -fsSL "$api" |
+              jq -r '
+                .assets[]
+                | select(.name | test("\\.zip$"))
+                | select(.name | test("local") | not)
+                | .browser_download_url
+              ' | head -n 1
+          )"
+
+          if [[ -z "${url:-}" || "$url" == "null" ]]; then
+            echo "ERROR: Could not find a matching asset (.zip without 'local') in latest release."
+            exit 1
+          fi
+
+          file="$(basename "$url")"
+          echo "Downloading: $url"
+          curl -fL -o "$file" "$url"
+
+          echo "Extracting: $file"
+          unzip -o "$file" -d .
+
+          # Optional: remove zip after extraction
+          rm -f "$file"
+
+          echo "Workspace after extraction:"
+          ls -la
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload the extracted site from repository root
+          path: "."
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
